@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+    
 
 // Доступные бесплатные скины
 const SKINS = [
@@ -46,8 +47,8 @@ export default function CyberDash() {
 
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  const CANVAS_WIDTH = 750;
-  const CANVAS_HEIGHT = 650;
+  const CANVAS_WIDTH = 400;
+  const CANVAS_HEIGHT = 600;
 
   // Звуковой синтезатор
   const playSound = (type: 'coin' | 'crash' | 'shield' | 'magnet' | 'slowmo' | 'laser' | 'boss') => {
@@ -683,7 +684,7 @@ export default function CyberDash() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-white font-mono p-2 sm:p-4 select-none touch-none">
       {/* HUD Панель */}
-      <div className="w-full max-w-[750px] flex justify-between items-center mb-2 text-[10px] sm:text-xs gap-1 sm:gap-2">
+      <div className="w-full max-w-[420px] flex justify-between items-center mb-2 text-[10px] sm:text-xs gap-1 sm:gap-2">
         <div className="bg-slate-900 border border-cyan-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
           <span className="text-slate-400">СЧЕТ:</span>
           <span className="text-cyan-400 font-bold">{score}</span>
