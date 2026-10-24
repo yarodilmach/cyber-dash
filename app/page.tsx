@@ -682,8 +682,9 @@ export default function CyberDash() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-white font-mono p-2 sm:p-4 select-none touch-none">
-      {/* HUD Панель */}
+  <div className="min-h-screen bg-slate-950 text-white font-mono flex items-center justify-center p-2">
+    <div className="w-full max-w-[400px] flex flex-col items-center bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl">
+      {/* Здесь идет весь ваш остальной код игры */}
       <div className="w-full max-w-[420px] flex justify-between items-center mb-2 text-[10px] sm:text-xs gap-1 sm:gap-2">
         <div className="bg-slate-900 border border-cyan-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
           <span className="text-slate-400">СЧЕТ:</span>
@@ -925,6 +926,7 @@ export default function CyberDash() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
