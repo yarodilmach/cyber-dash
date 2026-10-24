@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-    
 
 // Доступные бесплатные скины
 const SKINS = [
@@ -22,10 +21,7 @@ export default function CyberDash() {
   const [speed, setSpeed] = useState<number>(60);
   const [boost, setBoost] = useState<number>(100);
 
-  // Реф для монет (чтобы не сбрасывать скорость при подборе)
   const totalCoinsRef = useRef<number>(0);
-
-  // Выбранный скин
   const [selectedSkin, setSelectedSkin] = useState<string>('cyan');
 
   // Способности
@@ -47,8 +43,8 @@ export default function CyberDash() {
 
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  const CANVAS_WIDTH = 400;
-  const CANVAS_HEIGHT = 600;
+  const CANVAS_WIDTH = 700;  // Широкая, удобная дорога
+  const CANVAS_HEIGHT = 650; // Высота экрана игры
 
   // Звуковой синтезатор
   const playSound = (type: 'coin' | 'crash' | 'shield' | 'magnet' | 'slowmo' | 'laser' | 'boss') => {
@@ -143,13 +139,11 @@ export default function CyberDash() {
     }
   };
 
-  // Выбор скина
   const selectSkin = (id: string) => {
     setSelectedSkin(id);
     localStorage.setItem('cyber_dash_skin', id);
   };
 
-  // Переключение паузы
   const togglePause = () => {
     setGameState((prev) => (prev === 'PLAYING' ? 'PAUSED' : prev === 'PAUSED' ? 'PLAYING' : prev));
   };
@@ -274,14 +268,12 @@ export default function CyberDash() {
     const loop = () => {
       ctx.save();
 
-      // Объединяем физические клавиши и сенсорное нажатие на телефоне
       const isLeft = keys.left || mobileKeysRef.current.left;
       const isRight = keys.right || mobileKeysRef.current.right;
       const isUp = keys.up || mobileKeysRef.current.up;
 
-      // Обработка выстрела лазера с сенсора
       if (mobileKeysRef.current.shoot) {
-        mobileKeysRef.current.shoot = false; // Сбрасываем триггер выстрела
+        mobileKeysRef.current.shoot = false;
         shootLaser();
       }
 
@@ -338,7 +330,7 @@ export default function CyberDash() {
 
       gridOffset = (gridOffset + 4 * currentSpeed) % 40;
 
-      // Отрисовка дороги
+      // Отрисовка сетки дороги
       ctx.strokeStyle = slowmoTimer > 0 ? 'rgba(16, 185, 129, 0.25)' : 'rgba(0, 243, 255, 0.2)';
       ctx.lineWidth = 1;
       for (let y = gridOffset; y < CANVAS_HEIGHT; y += 40) {
@@ -681,267 +673,277 @@ export default function CyberDash() {
     setGameState('PLAYING');
   };
 
- return (
-  <div style={{
-    minHeight: '100vh',
-    backgroundColor: '#020617',
-    color: '#ffffff',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '10px'
-  }}>
+  return (
     <div style={{
-      width: '100%',
-      maxWidth: '400px',
+      minHeight: '100vh',
+      backgroundColor: '#020617',
+      color: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center'
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '10px'
     }}>
-      {/* Здесь идет весь ваш остальной код игры */}
-      <div className="w-full max-w-[420px] flex justify-between items-center mb-2 text-[10px] sm:text-xs gap-1 sm:gap-2">
-        <div className="bg-slate-900 border border-cyan-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
-          <span className="text-slate-400">СЧЕТ:</span>
-          <span className="text-cyan-400 font-bold">{score}</span>
-        </div>
-        <div className="bg-slate-900 border border-yellow-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
-          <span className="text-slate-400">МОНЕТЫ:</span>
-          <span className="text-yellow-400 font-bold">🪙 {totalCoins}</span>
-        </div>
-        <div className="bg-slate-900 border border-yellow-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
-          <span className="text-slate-400">РЕКОРД:</span>
-          <span className="text-yellow-400 font-bold">{highScore}</span>
-        </div>
-        <div className="bg-slate-900 border border-pink-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
-          <span className="text-slate-400">СКОРОСТЬ:</span>
-          <span className="text-pink-500 font-bold">{speed} KM/H</span>
-        </div>
+      <div style={{
+        width: '100%',
+        maxWidth: '750px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
 
-        {gameState === 'PLAYING' && (
-          <button
-            onClick={togglePause}
-            className="bg-slate-800 hover:bg-slate-700 border border-slate-600 px-2.5 py-1 rounded text-white font-bold transition active:scale-95"
-          >
-            ⏸️
-          </button>
-        )}
-      </div>
-
-      {/* Индикаторы бонусов */}
-      <div className="w-full max-w-[750px] flex gap-2 mb-2 text-[10px] sm:text-xs">
-        {activeMagnet && (
-          <div className="bg-purple-900/60 border border-purple-500 px-2 py-0.5 rounded text-purple-300 animate-pulse">
-            🧲 МАГНИТ
-          </div>
-        )}
-        {activeSlowmo && (
-          <div className="bg-emerald-900/60 border border-emerald-500 px-2 py-0.5 rounded text-emerald-300 animate-pulse">
-            ⏱️ SLOW-MO
-          </div>
-        )}
-        {laserAmmo > 0 && (
-          <div className="bg-amber-900/60 border border-amber-500 px-2 py-0.5 rounded text-amber-300">
-            🔫 ЛАЗЕР: {laserAmmo}
-          </div>
-        )}
-      </div>
-
-      {/* Игровой Холст */}
-      <div className="relative w-full max-w-[750px] border-2 border-cyan-500/30 rounded-2xl overflow-hidden shadow-2xl bg-slate-900">
-        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="block w-full h-auto" />
-
-        {comboText && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-400 font-extrabold text-xs sm:text-sm tracking-widest bg-slate-950/80 px-3 py-1 rounded-full border border-amber-500/40 animate-bounce">
-            {comboText}
-          </div>
-        )}
-
-        {/* Шкала Нитро */}
-        {gameState === 'PLAYING' && (
-          <div className="absolute top-3 left-4 right-4 h-1.5 bg-slate-950/80 rounded-full border border-cyan-500/30 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-cyan-500 to-pink-500 transition-all duration-75"
-              style={{ width: `${boost}%` }}
-            />
-          </div>
-        )}
-
-        {/* НАЭКРАННЫЕ КНОПКИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */}
-{gameState === 'PLAYING' && (
-  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center pointer-events-none">
-    {/* Кнопки поворотов влево/вправо в нижне-левом углу */}
-    <div className="flex gap-2 pointer-events-auto">
-      <button
-        onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.left = true; }}
-        onTouchEnd={(e) => { e.preventDefault(); mobileKeysRef.current.left = false; }}
-        onMouseDown={() => (mobileKeysRef.current.left = true)}
-        onMouseUp={() => (mobileKeysRef.current.left = false)}
-        className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-950/80 border-2 border-cyan-500/80 rounded-full text-cyan-400 flex items-center justify-center active:bg-cyan-500/40 active:scale-95 shadow-lg backdrop-blur-sm"
-      >
-        <span className="text-lg">◀</span>
-      </button>
-      <button
-        onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.right = true; }}
-        onTouchEnd={(e) => { e.preventDefault(); mobileKeysRef.current.right = false; }}
-        onMouseDown={() => (mobileKeysRef.current.right = true)}
-        onMouseUp={() => (mobileKeysRef.current.right = false)}
-        className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-950/80 border-2 border-cyan-500/80 rounded-full text-cyan-400 flex items-center justify-center active:bg-cyan-500/40 active:scale-95 shadow-lg backdrop-blur-sm"
-      >
-        <span className="text-lg">▶</span>
-      </button>
-    </div>
-
-    {/* Кнопки действий (Лазер и Нитро) справа */}
-    <div className="flex gap-2 pointer-events-auto">
-      {laserAmmo > 0 && (
-        <button
-          onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.shoot = true; }}
-          onClick={() => (mobileKeysRef.current.shoot = true)}
-          className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-950/80 border-2 border-amber-500/80 rounded-full text-lg flex items-center justify-center active:bg-amber-500/40 active:scale-95 text-amber-300 font-bold backdrop-blur-sm shadow-lg"
-        >
-          🔫
-        </button>
-      )}
-      <button
-        onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.up = true; }}
-        onTouchEnd={(e) => { e.preventDefault(); mobileKeysRef.current.up = false; }}
-        onMouseDown={() => (mobileKeysRef.current.up = true)}
-        onMouseUp={() => (mobileKeysRef.current.up = false)}
-        className="w-12 h-12 sm:w-14 sm:h-14 bg-pink-950/80 border-2 border-pink-500/80 rounded-full text-xs flex items-center justify-center active:bg-pink-500/40 active:scale-95 text-pink-400 font-extrabold backdrop-blur-sm shadow-lg uppercase"
-      >
-        ⚡
-      </button>
-    </div>
-  </div>
-)}
-
-        {/* Экран Паузы */}
-        {gameState === 'PAUSED' && (
-          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
-            <h2 className="text-3xl font-black italic tracking-wider text-yellow-400 mb-6">ПАУЗА</h2>
-            <div className="flex flex-col gap-3 w-48">
-              <button
-                onClick={togglePause}
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 rounded-full shadow-lg transition transform active:scale-95 text-xs uppercase tracking-wider"
-              >
-                ПРОДОЛЖИТЬ
-              </button>
-              <button
-                onClick={() => setGameState('START')}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-full border border-slate-600 transition transform active:scale-95 text-xs uppercase tracking-wider"
-              >
-                В МЕНЮ / ГАРАЖ
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Главное Меню / Гараж */}
+        {/* 🏎️ ЭКРАН 1: ГАРАЖ / ГЛАВНОЕ МЕНЮ (Показывается ТОЛЬКО перед стартом или при поражении) */}
         {(gameState === 'START' || gameState === 'GAMEOVER') && (
-          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 text-center overflow-y-auto">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-black italic tracking-wider text-cyan-400 mb-1">CYBER DASH</h1>
-              <p className="text-slate-400 text-[10px] sm:text-xs mb-3">
-                Управляйте сенсорными кнопками на смартфоне или клавишами A/D на ПК
-              </p>
-            </div>
+          <div className="w-full bg-slate-900/90 border border-cyan-500/30 p-6 rounded-3xl shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-md flex flex-col items-center text-center">
+            <h1 className="text-4xl font-black italic tracking-wider text-cyan-400 mb-1 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+              CYBER DASH
+            </h1>
+            <p className="text-slate-400 text-xs mb-6">
+              {gameState === 'GAMEOVER' ? 'МАШИНА РАЗБИТА! ВЕРНИТЕСЬ В ГАРАЖ' : 'Управляйте сенсорными кнопками или клавишами A/D на ПК'}
+            </p>
 
-            {/* Выбор 6 бесплатных скинов */}
-            <div className="w-full max-w-lg mb-3">
-              <h2 className="text-[10px] sm:text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">
-                Выбор скина машины (Бесплатно)
+            {gameState === 'GAMEOVER' && (
+              <div className="mb-6 bg-slate-950/80 border border-red-500/50 px-6 py-3 rounded-2xl">
+                <div className="text-xs text-slate-400">ВАШ СЧЕТ</div>
+                <div className="text-3xl font-extrabold text-red-500">{score}</div>
+              </div>
+            )}
+
+            {/* Выбор скина */}
+            <div className="w-full mb-6">
+              <h2 className="text-xs font-bold text-slate-300 mb-3 uppercase tracking-wider text-left">
+                🎨 Выбор скина машины (Бесплатно)
               </h2>
-              <div className="grid grid-cols-6 gap-1.5">
+              <div className="grid grid-cols-6 gap-2">
                 {SKINS.map((skin) => (
                   <button
                     key={skin.id}
                     onClick={() => selectSkin(skin.id)}
-                    className={`flex flex-col items-center justify-center p-1.5 rounded-lg border transition ${
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
                       selectedSkin === skin.id
-                        ? 'border-cyan-400 bg-cyan-950/60 scale-105 shadow-lg'
+                        ? 'border-cyan-400 bg-cyan-950/80 scale-105 shadow-[0_0_15px_rgba(6,182,212,0.4)]'
                         : 'border-slate-800 bg-slate-900/50 hover:border-slate-600'
                     }`}
                   >
                     <div
-                      className="w-4 h-7 rounded mb-1 border border-slate-700 shadow-md"
+                      className="w-5 h-8 rounded mb-1 border border-slate-700 shadow-md"
                       style={{ backgroundColor: skin.color }}
                     />
-                    <span className="text-[9px] font-bold text-slate-300">{skin.name}</span>
+                    <span className="text-[10px] font-bold text-slate-300">{skin.name}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Магазин Прокачки */}
-            <div className="w-full max-w-lg grid grid-cols-2 gap-2 mb-4 text-left">
-              <div className="bg-slate-900/90 border border-slate-800 p-2 rounded-xl flex flex-col justify-between">
+            {/* Магазин прокачки */}
+            <div className="w-full grid grid-cols-2 gap-3 mb-6 text-left">
+              <div className="bg-slate-950/60 border border-slate-800 p-3 rounded-2xl flex flex-col justify-between">
                 <div>
-                  <div className="text-[11px] font-bold text-cyan-400">🔋 Нитро Бак</div>
-                  <div className="text-[9px] text-slate-400 mb-1">Уровень {upgrades.nitro}/5</div>
+                  <div className="text-xs font-bold text-cyan-400">🔋 Нитро Бак (Ур. {upgrades.nitro}/5)</div>
+                  <div className="text-[10px] text-slate-400">Емкость и скорость заряда ускорения</div>
                 </div>
                 <button
                   onClick={() => buyUpgrade('nitro')}
                   disabled={upgrades.nitro >= 5 || totalCoins < upgrades.nitro * 100}
-                  className="w-full py-1 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-[9px] font-bold rounded transition"
+                  className="mt-3 py-1.5 px-3 bg-cyan-950/60 border border-cyan-500/40 hover:border-cyan-400 disabled:opacity-40 text-cyan-300 rounded-xl text-xs font-bold transition active:scale-95"
                 >
-                  {upgrades.nitro >= 5 ? 'MAX' : `Улучшить: 🪙 ${upgrades.nitro * 100}`}
+                  {upgrades.nitro >= 5 ? 'МАКС' : `Улучшить: 🪙 ${upgrades.nitro * 100}`}
                 </button>
               </div>
 
-              <div className="bg-slate-900/90 border border-slate-800 p-2 rounded-xl flex flex-col justify-between">
+              <div className="bg-slate-950/60 border border-slate-800 p-3 rounded-2xl flex flex-col justify-between">
                 <div>
-                  <div className="text-[11px] font-bold text-purple-400">🧲 Магнит</div>
-                  <div className="text-[9px] text-slate-400 mb-1">Уровень {upgrades.magnet}/5</div>
+                  <div className="text-xs font-bold text-purple-400">🧲 Магнит (Ур. {upgrades.magnet}/5)</div>
+                  <div className="text-[10px] text-slate-400">Дальность притяжения монет</div>
                 </div>
                 <button
                   onClick={() => buyUpgrade('magnet')}
                   disabled={upgrades.magnet >= 5 || totalCoins < upgrades.magnet * 100}
-                  className="w-full py-1 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-[9px] font-bold rounded transition"
+                  className="mt-3 py-1.5 px-3 bg-purple-950/60 border border-purple-500/40 hover:border-purple-400 disabled:opacity-40 text-purple-300 rounded-xl text-xs font-bold transition active:scale-95"
                 >
-                  {upgrades.magnet >= 5 ? 'MAX' : `Улучшить: 🪙 ${upgrades.magnet * 100}`}
+                  {upgrades.magnet >= 5 ? 'МАКС' : `Улучшить: 🪙 ${upgrades.magnet * 100}`}
                 </button>
               </div>
 
-              <div className="bg-slate-900/90 border border-slate-800 p-2 rounded-xl flex flex-col justify-between">
+              <div className="bg-slate-950/60 border border-slate-800 p-3 rounded-2xl flex flex-col justify-between">
                 <div>
-                  <div className="text-[11px] font-bold text-emerald-400">⏱️ Slow-Mo</div>
-                  <div className="text-[9px] text-slate-400 mb-1">Уровень {upgrades.slowmo}/5</div>
+                  <div className="text-xs font-bold text-emerald-400">⏱️ Slow-Mo (Ур. {upgrades.slowmo}/5)</div>
+                  <div className="text-[10px] text-slate-400">Длительность замедления времени</div>
                 </div>
                 <button
                   onClick={() => buyUpgrade('slowmo')}
                   disabled={upgrades.slowmo >= 5 || totalCoins < upgrades.slowmo * 100}
-                  className="w-full py-1 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-[9px] font-bold rounded transition"
+                  className="mt-3 py-1.5 px-3 bg-emerald-950/60 border border-emerald-500/40 hover:border-emerald-400 disabled:opacity-40 text-emerald-300 rounded-xl text-xs font-bold transition active:scale-95"
                 >
-                  {upgrades.slowmo >= 5 ? 'MAX' : `Улучшить: 🪙 ${upgrades.slowmo * 100}`}
+                  {upgrades.slowmo >= 5 ? 'МАКС' : `Улучшить: 🪙 ${upgrades.slowmo * 100}`}
                 </button>
               </div>
 
-              <div className="bg-slate-900/90 border border-slate-800 p-2 rounded-xl flex flex-col justify-between">
+              <div className="bg-slate-950/60 border border-slate-800 p-3 rounded-2xl flex flex-col justify-between">
                 <div>
-                  <div className="text-[11px] font-bold text-amber-400">🛡️ Лазер & Щит</div>
-                  <div className="text-[9px] text-slate-400 mb-1">Уровень {upgrades.laser}/5</div>
+                  <div className="text-xs font-bold text-amber-400">🛡️ Лазер & Щит (Ур. {upgrades.laser}/5)</div>
+                  <div className="text-[10px] text-slate-400">Стартовый запас лазера и щит</div>
                 </div>
                 <button
                   onClick={() => buyUpgrade('laser')}
                   disabled={upgrades.laser >= 5 || totalCoins < upgrades.laser * 100}
-                  className="w-full py-1 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-[9px] font-bold rounded transition"
+                  className="mt-3 py-1.5 px-3 bg-amber-950/60 border border-amber-500/40 hover:border-amber-400 disabled:opacity-40 text-amber-300 rounded-xl text-xs font-bold transition active:scale-95"
                 >
-                  {upgrades.laser >= 5 ? 'MAX' : `Улучшить: 🪙 ${upgrades.laser * 100}`}
+                  {upgrades.laser >= 5 ? 'МАКС' : `Улучшить: 🪙 ${upgrades.laser * 100}`}
                 </button>
               </div>
             </div>
 
+            {/* Кнопка старта */}
             <button
               onClick={startGame}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold px-10 py-3 rounded-full shadow-lg transition transform active:scale-95 text-xs uppercase tracking-wider mb-1"
+              className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-lg rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-all duration-200 active:scale-98 cursor-pointer uppercase tracking-wider"
             >
-              {gameState === 'START' ? 'ПОЕХАЛИ!' : 'ИГРАТЬ СНОВА'}
+              ПОЕХАЛИ!
             </button>
           </div>
         )}
+
+        {/* 🎮 ЭКРАН 2: ИГРОВОЙ ПРОЦЕСС (Показывается ТОЛЬКО во время гонки или паузы) */}
+        {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
+          <div className="w-full flex flex-col items-center">
+            {/* Верхняя инфо-панель */}
+            <div className="w-full flex justify-between items-center mb-2 text-xs gap-2">
+              <div className="bg-slate-900 border border-cyan-500/40 px-3 py-1.5 rounded-xl flex gap-1 shadow-md">
+                <span className="text-slate-400">СЧЕТ:</span>
+                <span className="text-cyan-400 font-bold">{score}</span>
+              </div>
+              <div className="bg-slate-900 border border-yellow-500/40 px-3 py-1.5 rounded-xl flex gap-1 shadow-md">
+                <span className="text-slate-400">МОНЕТЫ:</span>
+                <span className="text-yellow-400 font-bold">🪙 {totalCoins}</span>
+              </div>
+              <div className="bg-slate-900 border border-yellow-500/40 px-3 py-1.5 rounded-xl flex gap-1 shadow-md">
+                <span className="text-slate-400">РЕКОРД:</span>
+                <span className="text-yellow-400 font-bold">{highScore}</span>
+              </div>
+              <div className="bg-slate-900 border border-pink-500/40 px-3 py-1.5 rounded-xl flex gap-1 shadow-md">
+                <span className="text-slate-400">СКОРОСТЬ:</span>
+                <span className="text-pink-500 font-bold">{speed} KM/H</span>
+              </div>
+              <button
+                onClick={togglePause}
+                className="bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-xl text-white font-bold transition active:scale-95 shadow-md"
+              >
+                ⏸️
+              </button>
+            </div>
+
+            {/* Индикаторы активных бонусов */}
+            <div className="w-full flex gap-2 mb-2 text-xs">
+              {activeMagnet && (
+                <div className="bg-purple-900/60 border border-purple-500 px-3 py-1 rounded-xl text-purple-300 animate-pulse shadow-md">
+                  🧲 МАГНИТ АКТИВЕН
+                </div>
+              )}
+              {activeSlowmo && (
+                <div className="bg-emerald-900/60 border border-emerald-500 px-3 py-1 rounded-xl text-emerald-300 animate-pulse shadow-md">
+                  ⏱️ SLOW-MO
+                </div>
+              )}
+              {laserAmmo > 0 && (
+                <div className="bg-amber-900/60 border border-amber-500 px-3 py-1 rounded-xl text-amber-300 shadow-md">
+                  🔫 ЛАЗЕР: {laserAmmo}
+                </div>
+              )}
+            </div>
+
+            {/* Холст игры */}
+            <div className="relative w-full border-2 border-cyan-500/40 rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(6,182,212,0.2)] bg-slate-900">
+              <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="block w-full h-auto" />
+
+              {comboText && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 text-amber-400 font-extrabold text-sm tracking-widest bg-slate-950/85 px-4 py-1.5 rounded-full border border-amber-500/40 animate-bounce shadow-lg">
+                  {comboText}
+                </div>
+              )}
+
+              {/* Шкала нитро */}
+              <div className="absolute top-4 left-4 right-4 h-2 bg-slate-950/80 rounded-full border border-cyan-500/30 overflow-hidden shadow-md">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-500 to-pink-500 transition-all duration-75"
+                  style={{ width: `${boost}%` }}
+                />
+              </div>
+
+              {/* Наэкранное управление с отступом между кнопками (25px) */}
+              {gameState === 'PLAYING' && (
+                <div className="absolute bottom-5 left-5 right-5 flex justify-between items-center pointer-events-none">
+                  {/* Кнопки поворотов влево/вправо с отступом между ними */}
+                  <div className="flex gap-[25px] pointer-events-auto">
+                    <button
+                      onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.left = true; }}
+                      onTouchEnd={(e) => { e.preventDefault(); mobileKeysRef.current.left = false; }}
+                      onMouseDown={() => (mobileKeysRef.current.left = true)}
+                      onMouseUp={() => (mobileKeysRef.current.left = false)}
+                      className="w-14 h-14 bg-slate-950/85 border-2 border-cyan-500/80 rounded-full text-cyan-400 flex items-center justify-center active:bg-cyan-500/40 active:scale-95 shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-md"
+                    >
+                      <span className="text-xl">◀</span>
+                    </button>
+                    <button
+                      onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.right = true; }}
+                      onTouchEnd={(e) => { e.preventDefault(); mobileKeysRef.current.right = false; }}
+                      onMouseDown={() => (mobileKeysRef.current.right = true)}
+                      onMouseUp={() => (mobileKeysRef.current.right = false)}
+                      className="w-14 h-14 bg-slate-950/85 border-2 border-cyan-500/80 rounded-full text-cyan-400 flex items-center justify-center active:bg-cyan-500/40 active:scale-95 shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-md"
+                    >
+                      <span className="text-xl">▶</span>
+                    </button>
+                  </div>
+
+                  {/* Кнопки действий (Лазер и Нитро) с отступом между ними */}
+                  <div className="flex gap-[25px] pointer-events-auto">
+                    {laserAmmo > 0 && (
+                      <button
+                        onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.shoot = true; }}
+                        onClick={() => (mobileKeysRef.current.shoot = true)}
+                        className="w-14 h-14 bg-amber-950/85 border-2 border-amber-500/80 rounded-full text-xl flex items-center justify-center active:bg-amber-500/40 active:scale-95 text-amber-300 font-bold backdrop-blur-md shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+                      >
+                        🔫
+                      </button>
+                    )}
+                    <button
+                      onTouchStart={(e) => { e.preventDefault(); mobileKeysRef.current.up = true; }}
+                      onTouchEnd={(e) => { e.preventDefault(); mobileKeysRef.current.up = false; }}
+                      onMouseDown={() => (mobileKeysRef.current.up = true)}
+                      onMouseUp={() => (mobileKeysRef.current.up = false)}
+                      className="w-14 h-14 bg-pink-950/85 border-2 border-pink-500/80 rounded-full text-lg flex items-center justify-center active:bg-pink-500/40 active:scale-95 text-pink-400 font-extrabold backdrop-blur-md shadow-[0_0_15px_rgba(236,72,153,0.3)]"
+                    >
+                      ⚡
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Экран паузы */}
+              {gameState === 'PAUSED' && (
+                <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+                  <h2 className="text-3xl font-black italic tracking-wider text-yellow-400 mb-6 drop-shadow-[0_0_15px_rgba(250,204,21,0.4)]">ПАУЗА</h2>
+                  <div className="flex flex-col gap-3 w-52">
+                    <button
+                      onClick={togglePause}
+                      className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold py-3.5 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.5)] transition active:scale-95 text-xs uppercase tracking-wider"
+                    >
+                      ПРОДОЛЖИТЬ
+                    </button>
+                    <button
+                      onClick={() => setGameState('START')}
+                      className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-2xl border border-slate-600 transition active:scale-95 text-xs uppercase tracking-wider shadow-md"
+                    >
+                      В ГАРАЖ
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
       </div>
-    </div>
     </div>
   );
 }
