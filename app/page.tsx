@@ -681,9 +681,24 @@ export default function CyberDash() {
     setGameState('PLAYING');
   };
 
-  return (
-  <div className="min-h-screen bg-slate-950 text-white font-mono flex items-center justify-center p-2">
-    <div className="w-full max-w-[400px] flex flex-col items-center bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl">
+ return (
+  <div style={{
+    minHeight: '100vh',
+    backgroundColor: '#020617',
+    color: '#ffffff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '10px'
+  }}>
+    <div style={{
+      width: '100%',
+      maxWidth: '400px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
+    }}>
       {/* Здесь идет весь ваш остальной код игры */}
       <div className="w-full max-w-[420px] flex justify-between items-center mb-2 text-[10px] sm:text-xs gap-1 sm:gap-2">
         <div className="bg-slate-900 border border-cyan-500/40 px-2 sm:px-3 py-1 rounded flex gap-1">
